@@ -9,6 +9,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  datasource:
+    url: ${JAWSDB_URL}
+    driverClassName: com.mysql.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
 ---
 name: file-upload-backend
 enabled: false
