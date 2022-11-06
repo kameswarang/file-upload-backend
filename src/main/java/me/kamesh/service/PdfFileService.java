@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +17,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.logging.Level.*;
+import static java.util.logging.Level.SEVERE;
 import static me.kamesh.utils.Constants.CHECKSUM_ALGORITHM;
 import static me.kamesh.utils.Constants.HASH_LENGTH;
 
@@ -48,13 +46,6 @@ public class PdfFileService {
             LOG.log(SEVERE, e.getMessage());
             return false;
         }
-
-//        try {
-//            writeToLocal(dto);
-//        } catch (IOException e) {
-//            LOG.log(WARNING, "Could not write PDF to local");
-//            LOG.log(WARNING, e.getMessage());
-//        }
 
         try {
             dto.setLink(uploadToCloud(dto.getNameHash(), dto.getFile().getBytes()));
@@ -89,13 +80,6 @@ public class PdfFileService {
         }
         return Base64.getUrlEncoder()
                 .encodeToString(md.digest());
-    }
-
-    private void writeToLocal(PdfFileDTO dto) throws IOException {
-        Path p = Path.of(format("your_path_here\\%s.pdf", dto.getName()));
-        Files.deleteIfExists(p);
-        Files.createFile(p);
-        Files.write(p, dto.getFile().getBytes());
     }
     private String uploadToCloud(String nameHash, byte[] file) {
         return awsS3Service.uploadToBucket(format("%s.pdf", nameHash), file);
