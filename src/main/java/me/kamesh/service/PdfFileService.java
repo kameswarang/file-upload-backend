@@ -26,10 +26,12 @@ import static me.kamesh.utils.Constants.HASH_LENGTH;
 @Service
 public class PdfFileService {
     private static final Logger LOG = Logger.getLogger(PdfFileService.class.getName());
-    private PdfFileRepository repository;
+    private final PdfFileRepository repository;
+    private final AwsS3Service awsS3Service;
 
-    public PdfFileService(@Autowired PdfFileRepository repository) {
+    public PdfFileService(@Autowired PdfFileRepository repository, @Autowired AwsS3Service awsS3Service) {
         this.repository = repository;
+        this.awsS3Service = awsS3Service;
     }
 
     public List<PdfFile> getAllFiles() {
@@ -42,8 +44,8 @@ public class PdfFileService {
             dto.setNameHash(dto.getName() + "-" + checksum.substring(0, HASH_LENGTH));
 
         } catch (NoSuchAlgorithmException | IOException e) {
-            LOG.log(WARNING, "Failed to create checksum for give PDF. Cannot save without checksum.");
-            LOG.log(WARNING, e.getMessage());
+            LOG.log(SEVERE, "Failed to create checksum for give PDF. Cannot save without checksum.");
+            LOG.log(SEVERE, e.getMessage());
             return false;
         }
 
@@ -55,13 +57,24 @@ public class PdfFileService {
 //        }
 
         try {
-            dto.setLink(uploadToCloud(dto.getFile().getBytes()));
+            dto.setLink(uploadToCloud(dto.getNameHash(), dto.getFile().getBytes()));
         } catch (IOException e) {
-            LOG.log(WARNING, "Could not get file contents to upload");
-            LOG.log(WARNING, e.getMessage());
+            LOG.log(SEVERE, "Could not get file contents to upload");
+            LOG.log(SEVERE, e.getMessage());
+            return false;
+        } catch (Exception e) {
+            LOG.log(SEVERE, "Could not upload file to cloud storage");
+            LOG.log(SEVERE, e.getMessage());
+            return false;
         }
 
-        persistToDatabase(PdfFile.from(dto));
+        try {
+            persistToDatabase(PdfFile.from(dto));
+        } catch (Exception e) {
+            LOG.log(SEVERE, "Could not make entry in database");
+            LOG.log(SEVERE, e.getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -84,8 +97,8 @@ public class PdfFileService {
         Files.createFile(p);
         Files.write(p, dto.getFile().getBytes());
     }
-    private String uploadToCloud(byte[] file) {
-        return "https://linin";
+    private String uploadToCloud(String nameHash, byte[] file) {
+        return awsS3Service.uploadToBucket(nameHash, file);
     }
 
     private void persistToDatabase(PdfFile file) {

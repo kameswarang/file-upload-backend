@@ -17,6 +17,9 @@ spring:
     hibernate:
       ddl-auto: create
     open-in-view: false
+aws:
+  region: ap-south-1
+  bucket: hobby-kamesh
 ---
 name: file-upload-backend
 enabled: false
@@ -40,3 +43,6 @@ spring:
   h2:
     console:
       enabled: true
+aws:
+  region: ap-south-1
+  bucket: hobby-kamesh

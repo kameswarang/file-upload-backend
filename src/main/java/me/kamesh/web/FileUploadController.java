@@ -49,7 +49,7 @@ public class FileUploadController {
             LOG.log(INFO, "Saved PDF file received with name: {0}", pdfFileDto.getName());
         }
         else {
-            LOG.log(WARNING, "Failed to save PDF file with name: {0}", pdfFileDto.getName());
+            LOG.log(SEVERE, "Failed to save PDF file with name: {0}", pdfFileDto.getName());
         }
         return this.get(model);
     }
