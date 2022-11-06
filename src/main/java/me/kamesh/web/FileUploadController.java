@@ -36,7 +36,7 @@ public class FileUploadController {
     public String get(Model model) {
         List<PdfFile> files = fileService.getAllFiles();
 
-        model.addAttribute("pdfFiles", files);
+        model.addAttribute("pdfFiles", getAllFiles());
         model.addAttribute("pdfFileDto", new PdfFileDTO());
         return "home";
     }
@@ -44,6 +44,7 @@ public class FileUploadController {
     @PostMapping
     public String post(@Valid @ModelAttribute("pdfFileDto") PdfFileDTO pdfFileDto, Errors errors, Model model) throws Exception {
         if (errors.hasErrors()) {
+            model.addAttribute("pdfFiles", getAllFiles());
             return "home";
         }
 
@@ -56,5 +57,9 @@ public class FileUploadController {
             LOG.log(SEVERE, "Failed to save file received with name: {0}", pdfFileDto.getName());
         }
         return this.get(model);
+    }
+
+    private List<PdfFile> getAllFiles() {
+        return fileService.getAllFiles();
     }
 }
