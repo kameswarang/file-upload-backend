@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.*;
 import static me.kamesh.utils.Constants.CHECKSUM_ALGORITHM;
 import static me.kamesh.utils.Constants.HASH_LENGTH;
 
@@ -36,23 +36,33 @@ public class PdfFileService {
         return repository.findAll();
     }
 
-    public void saveFile(PdfFileDTO dto) throws IOException, NoSuchAlgorithmException {
+    public boolean saveFile(PdfFileDTO dto) {
         try {
             String checksum = getChecksum(dto.getFile().getBytes());
             dto.setNameHash(dto.getName() + "-" + checksum.substring(0, HASH_LENGTH));
 
-            LOG.log(INFO, "{0}: {1}", new String[]{dto.getName(), checksum});
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            LOG.log(WARNING, "Failed to create checksum for give PDF. Cannot save without checksum.");
+            LOG.log(WARNING, e.getMessage());
+            return false;
         }
 
-        writeToLocal(dto);
+//        try {
+//            writeToLocal(dto);
+//        } catch (IOException e) {
+//            LOG.log(WARNING, "Could not write PDF to local");
+//            LOG.log(WARNING, e.getMessage());
+//        }
 
-        dto.setLink(uploadToCloud(dto.getFile().getBytes()));
+        try {
+            dto.setLink(uploadToCloud(dto.getFile().getBytes()));
+        } catch (IOException e) {
+            LOG.log(WARNING, "Could not get file contents to upload");
+            LOG.log(WARNING, e.getMessage());
+        }
 
         persistToDatabase(PdfFile.from(dto));
+        return true;
     }
 
     private String getChecksum(byte[] input) throws NoSuchAlgorithmException, IOException {
@@ -69,7 +79,7 @@ public class PdfFileService {
     }
 
     private void writeToLocal(PdfFileDTO dto) throws IOException {
-        Path p = Path.of(format("C:\\Users\\Kameswaran Ganesh\\git\\file-upload-backend\\src\\main\\resources\\%s.pdf", dto.getName()));
+        Path p = Path.of(format("your_path_here\\%s.pdf", dto.getName()));
         Files.deleteIfExists(p);
         Files.createFile(p);
         Files.write(p, dto.getFile().getBytes());

@@ -18,8 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.*;
 
 @Controller
 @RequestMapping("/home")
@@ -34,27 +33,23 @@ public class FileUploadController {
 
     @GetMapping
     public String get(Model model) {
-        List<PdfFile> files = fileService.getAllFiles();
-
         model.addAttribute("pdfFiles", getAllFiles());
         model.addAttribute("pdfFileDto", new PdfFileDTO());
         return "home";
     }
 
     @PostMapping
-    public String post(@Valid @ModelAttribute("pdfFileDto") PdfFileDTO pdfFileDto, Errors errors, Model model) throws Exception {
+    public String post(@Valid @ModelAttribute("pdfFileDto") PdfFileDTO pdfFileDto, Errors errors, Model model) {
         if (errors.hasErrors()) {
             model.addAttribute("pdfFiles", getAllFiles());
             return "home";
         }
 
-        try {
-            fileService.saveFile(pdfFileDto);
+        if(fileService.saveFile(pdfFileDto)) {
             LOG.log(INFO, "Saved PDF file received with name: {0}", pdfFileDto.getName());
-        } catch (IOException | NoSuchAlgorithmException e) {
-            LOG.log(SEVERE, e.getMessage());
-            e.printStackTrace();
-            LOG.log(SEVERE, "Failed to save file received with name: {0}", pdfFileDto.getName());
+        }
+        else {
+            LOG.log(WARNING, "Failed to save PDF file with name: {0}", pdfFileDto.getName());
         }
         return this.get(model);
     }
