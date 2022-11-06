@@ -9,8 +9,6 @@ import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import static me.kamesh.utils.Constants.AWS_S3_BUCKET;
-
 @Service
 public class AwsS3Service {
     private final S3Client s3Client;
@@ -23,7 +21,7 @@ public class AwsS3Service {
 
     public String uploadToBucket(String key, byte[] contents) {
         s3Client.putObject(PutObjectRequest.builder()
-                    .bucket(AWS_S3_BUCKET)
+                    .bucket(bucket)
                     .key(key)
                     .acl(ObjectCannedACL.PUBLIC_READ).build(),
                 RequestBody.fromBytes(contents));
