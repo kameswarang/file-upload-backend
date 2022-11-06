@@ -48,6 +48,7 @@ public class HomeController {
         }
         else {
             LOG.log(SEVERE, "Failed to save PDF file with name: {0}", pdfFileDto.getName());
+            return "redirect:/home?errors";
         }
         return "redirect:/home";
     }
