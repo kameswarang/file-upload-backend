@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="File upload page">
+    <meta name="author" content="Kameswaran Ganesh">
+
+    <title>File Upload Page</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom css -->
+    <link href="/css/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="bodyWrapper">
+<!--        &lt;!&ndash; Error Modal &ndash;&gt;-->
+<!--        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">-->
+<!--          <div class="modal-dialog modal-dialog-centered modal-sm" role="document">-->
+<!--            <div class="modal-content">-->
+<!--              <div class="modal-body text-danger">-->
+<!--                {{ errorMessage }}-->
+<!--                <br>-->
+<!--                <span class="text-dark">Try again later.</span>-->
+<!--              </div>-->
+<!--              <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+              <a class="navbar-brand" href="/home">Fil Upload</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="#">by Kameswaran Ganesh </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/kameswarang/">this.Github</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="https://www.linkedin.com/in/kameswarang/">my.LinkedIn</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
+
+         <!-- Content -->
+        <div class="container">
+            <h1 class="text-center">File Upload</h1>
+            <p class="lead text-center">
+              Upload your PDF file below
+            </p>
+
+            <!-- File Upload -->
+            <form th:action="@{/home}" method="POST" th:object="${pdfFileDto}" enctype="multipart/form-data" id="fileUploadForm" class="px-1 w-50 m-auto">
+              <div class="form-group">
+                  <div class="row align-items-center mt-2">
+                      <div class="col">
+                          <label for="name" class="font-weight-bold">File Name</label>
+                          <input type="text" th:field="*{name}" th:value="*{name}" class="form-control" id="name" name="name" placeholder="File Name" required/>
+                          <div class="error" th:if="${#fields.hasErrors('name')}">
+                              <span th:errors="*{name}"></span>
+                          </div>
+                      </div>
+                      <div class="col">
+                          <label for="name" class="font-weight-bold">File</label>
+                          <input type="file" th:field="*{file}" accept="application/pdf" class="form-control" id="file" name="file" placeholder="PDF File" required/>
+                          <div class="error" th:if="${#fields.hasErrors('file')}">
+                              <span th:errors="*{file}"></span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="w-fit-content mt-2 mx-auto">
+                      <button class="btn btn-primary btn-lg" type="submit" id="submitFile">Upload</button>
+                  </div>
+              </div>
+            </form>
+
+            <!-- Uploaded Files -->
+            <div class="bg-light p-1 w-75 m-auto mt-2 rounded text-center">
+              <h3 id="uploadedFiles" class="d-inline" th:text="|Uploaded files - ${pdfFiles.size()}|"></h3>
+            </div>
+            <table class="table table-hover w-75 m-auto">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col" class="text-center">#</th>
+                  <th scope="col" class="text-center">Name</th>
+                  <th scope="col" class="text-center">Name-Hash</th>
+                  <th scope="col" class="text-center">Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="file,i : ${pdfFiles}">
+                  <th scope="row" th:text="${i.count}"></th>
+                  <td th:text="${file.getName()}"></td>
+                  <td th:text="${file.getNameHash()}"></td>
+                  <td th:text="${file.getLink()}"></td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+    </div>
+
+    <!-- jQuery js -->
+    <script src="/js/jquery/jquery.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Axios js -->
+    <script src="/js/axios/axios.min.js"></script>
+    <!-- Vuejs -->
+    <script src="/js/vue/vue.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="/js/main.js"></script>
+  </body>
+</html>
