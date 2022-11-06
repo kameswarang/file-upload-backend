@@ -87,7 +87,7 @@ public class PdfFileService {
                 read = dis.read();
             } while(read != -1);
         }
-        return Base64.getMimeEncoder()
+        return Base64.getUrlEncoder()
                 .encodeToString(md.digest());
     }
 
@@ -98,7 +98,7 @@ public class PdfFileService {
         Files.write(p, dto.getFile().getBytes());
     }
     private String uploadToCloud(String nameHash, byte[] file) {
-        return awsS3Service.uploadToBucket(nameHash, file);
+        return awsS3Service.uploadToBucket(format("%s.pdf", nameHash), file);
     }
 
     private void persistToDatabase(PdfFile file) {

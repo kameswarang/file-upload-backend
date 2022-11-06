@@ -9,6 +9,8 @@ import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import static me.kamesh.utils.Constants.MIME_PDF;
+
 @Service
 public class AwsS3Service {
     private final S3Client s3Client;
@@ -23,6 +25,7 @@ public class AwsS3Service {
         s3Client.putObject(PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
+                    .contentType(MIME_PDF)
                     .acl(ObjectCannedACL.PUBLIC_READ).build(),
                 RequestBody.fromBytes(contents));
 
