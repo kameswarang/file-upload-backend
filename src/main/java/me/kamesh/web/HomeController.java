@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,12 +20,12 @@ import static java.util.logging.Level.*;
 
 @Controller
 @RequestMapping("/home")
-public class FileUploadController {
-    private static final Logger LOG = Logger.getLogger(FileUploadController.class.getName());
+public class HomeController {
+    private static final Logger LOG = Logger.getLogger(HomeController.class.getName());
 
     private final PdfFileService fileService;
 
-    public FileUploadController(@Autowired PdfFileService service) {
+    public HomeController(@Autowired PdfFileService service) {
         this.fileService = service;
     }
 
@@ -51,7 +49,7 @@ public class FileUploadController {
         else {
             LOG.log(SEVERE, "Failed to save PDF file with name: {0}", pdfFileDto.getName());
         }
-        return this.get(model);
+        return "redirect:/home";
     }
 
     private List<PdfFile> getAllFiles() {
